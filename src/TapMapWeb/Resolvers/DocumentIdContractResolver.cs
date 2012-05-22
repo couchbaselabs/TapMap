@@ -10,7 +10,7 @@ namespace TapMapWeb.Resolvers
 	{
 		protected override List<System.Reflection.MemberInfo>
 			GetSerializableMembers(Type objectType)
-		{
+		{			
 			return base.GetSerializableMembers(objectType)
 				.Where(o => o.Name != "Id").ToList();
 		}

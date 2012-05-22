@@ -1,0 +1,61 @@
+﻿@model IEnumerable<TapMapWeb.Models.Tap>
+@{
+    ViewBag.Title = "Taps";
+}
+<div id="tapmap" style="position: relative; width: 800px; height: 600px;">
+</div>
+<script>    
+
+    $().ready(function (e) {
+        try {
+
+            /*	Set authentication token and appid 
+            *	WARNING: this is a demo-only key
+            *	please register on http://api.developer.nokia.com/ 
+            *	and obtain your own developer's API key 
+            */
+            nokia.Settings.set("appId", "_peU-uCkp-j8ovkzFGNU");
+            nokia.Settings.set("authenticationToken", "gBoUkAMoxoqIWfxWA5DuMQ");
+
+            var infoBubbles = new nokia.maps.map.component.InfoBubbles();
+            var behavior = new nokia.maps.map.component.Behavior();
+            var zoomBar = new nokia.maps.map.component.ZoomBar();
+
+            // Get the DOM node to which we will append the map
+            var mapContainer = document.getElementById("tapmap");
+            // Create a map inside the map container DOM node
+            var map = new nokia.maps.map.Display(mapContainer, {
+                // initial center and zoom level of the map
+                center: [@ViewBag.Center],
+                zoomLevel: @ViewBag.Zoom,
+                components: [
+                    behavior,
+                    infoBubbles,
+                    zoomBar
+	            ]
+            });
+
+            @foreach(var item in ViewData.Model)
+            {   
+                <text>
+                var props = { "brush": { "color": "#cc0000"} }
+                console.log(map.center);
+                var coordinate = [@item.Place.Lat, @item.Place.Long];
+                var standardMarker = new nokia.maps.map.StandardMarker(coordinate, props);  
+                standardMarker.addListener("click",
+	                function (evt) {
+	                    // Set the tail of the bubble to the coordinate of the marker
+                        var bubbleText = '@item.Place.Title<br />' + '@item.Beer.Name<br />' + '@item.Username: ' + '@item.Comment';
+	                    infoBubbles.addBubble(bubbleText, coordinate);
+	                }
+                );
+                map.objects.add(standardMarker);
+                </text>            
+             }            
+
+        } catch (e) {
+            alert(e.message);
+        }
+    });
+        
+</script>

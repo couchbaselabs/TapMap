@@ -8,62 +8,59 @@ using Newtonsoft.Json;
 using InflectorNet = Inflector.Net.Inflector;
 using Couchbase;
 using Enyim.Caching.Memcached;
+using Couchbase.Configuration;
+using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
 
 namespace TapMapDataLoader
 {
-    class Program
-    {
-        static void Main(string[] args)
-        {
+	class Program
+	{
+		static void Main(string[] args)
+		{
+			try
+			{
+				var config = new CouchbaseClientConfiguration();
+				config.Urls.Add(new Uri("http://localhost:8091/pools/default"));
+				config.Bucket = "beernique";
+				config.BucketPassword = "b33rs";
 
-            try
-            {
-                var client = new CouchbaseClient();
-                foreach (var file in Directory.GetFiles(Environment.CurrentDirectory, "*.txt"))
-                {
-                    var type = InflectorNet.Singularize(new FileInfo(file).Name.Replace(".txt", "").ToLower());
-                    using (var sr = new StreamReader(file))
-                    {
-                        var keys = sr.ReadLine().Split('|');
-                        var dict = new Dictionary<string, object>() { { "type", type } };
-                        
-                        string line = null;
-                        while ((line = sr.ReadLine()) != null)
-                        {
-                            var values = line.Split('|');
-                            for (var i = 0; i < values.Length; i++)
-                            {
-                                var keyData = keys[i].Split(':');
-                                object value = null;
-                                switch(keyData[0])
-                                {
-                                    case "i":
-                                        value = int.Parse(values[i]);
-                                        break;
-                                    case "d":
-                                        value = double.Parse(values[i]);
-                                        break;
-                                    default:
-                                        value = values[i];
-                                        break;
-                                }
+				var client = new CouchbaseClient(config);
 
-                                dict[keyData[1]] = value;
-                                var json = JsonConvert.SerializeObject(dict);
-                                Console.WriteLine(json);
-                                var key = string.Concat(type, "_", dict["name"].ToString().ToLower().Replace(" ", "_"));
-                                client.Store(StoreMode.Set, key, json);
+				var root = Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\beer-sample");
+				import(client, "brewery", Path.Combine(root, "breweries"));
+				import(client, "beer", Path.Combine(root, "beer"));
 
-                            }
-                        }                        
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+			}
+		}
 
-        }
-    }
+		private static void import(CouchbaseClient client, string type, string directory)
+		{
+			var dir = new DirectoryInfo(directory);
+			foreach (var file in dir.GetFiles())
+			{
+				if (file.Extension != ".json") continue;
+				Console.WriteLine("Adding {0}", file);
+
+				var json = File.ReadAllText(file.FullName);
+				var key = file.Name.Replace(file.Extension, "");
+				json = Regex.Replace(json.Replace(key, "LAZY"), "\"_id\":\"LAZY\",", "");
+				var jObj = JsonConvert.DeserializeObject(json) as JObject;
+				jObj.Add("type", type);
+
+				if (type == "beer")
+				{
+					jObj["brewery"] = "brewery_" + jObj["brewery"].ToString().Replace(" ", "_");
+				}
+
+				var storeResult = client.Store(StoreMode.Set, key, jObj.ToString());
+				Console.WriteLine(storeResult);
+			}
+
+		}
+	}
 }

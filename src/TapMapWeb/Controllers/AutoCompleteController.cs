@@ -9,25 +9,26 @@ namespace TapMapWeb.Controllers
 {
     public class AutoCompleteController : ControllerBase
     {
-        public PlaceRepository PlaceRepository { get; set; }
         public BeerRepository BeerRepository { get; set; }
+		public BreweryRepository BreweryRepository { get; set; }
 
         public AutoCompleteController()
         {
-            PlaceRepository = new PlaceRepository();
             BeerRepository = new BeerRepository();
+			BreweryRepository = new BreweryRepository();
         }
 
-        public ActionResult Places(string term)
-        {
-            return Json(PlaceRepository.GetPlaces(term).Select(p => new { label = p.Name, id = p.Id }), 
-                JsonRequestBehavior.AllowGet);
-        }
+		public ActionResult Breweries(string term)
+		{
+			return Json(BreweryRepository.GetBreweries(term)
+					.Select(b => new { label = b.Name, id = b.Id }), JsonRequestBehavior.AllowGet);
+		}
 
-        public ActionResult Beers(string term)
+        public ActionResult Beers(string brewery, string term)
         {
-            return Json(BeerRepository.GetBeers(term).Select(b => new { label = b.Name, id = b.Id}),
-                JsonRequestBehavior.AllowGet);
-        }
+            return Json(BeerRepository.GetBeers(brewery)
+					.Where(b => b.Name.StartsWith(term, StringComparison.CurrentCultureIgnoreCase))
+					.Select(b => new { label = b.Name, id = b.Id}),JsonRequestBehavior.AllowGet);
+        }		
     }
 }

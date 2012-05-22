@@ -6,32 +6,20 @@ using Newtonsoft.Json;
 
 namespace TapMapWeb.Models
 {
-    public class Place : ModelBase
+    public class Place
     {
-        [JsonProperty("name")]
-        public string Name { get; set; }
+        [JsonProperty("title")]
+        public string Title { get; set; }
 
-        [JsonProperty("address")]
-        public string Address { get; set; }
-
-        [JsonProperty("city")]
-        public string City { get; set; }
-
-        [JsonProperty("province")]
-        public string Province { get; set; }
-
-        [JsonProperty("postalcode")]
-        public string PostalCode { get; set; }
+		[JsonProperty("placeId")]
+		public string PlaceId { get; set; }
 
         [JsonProperty("lat")]
-        public string Lat { get; set; }
+        public decimal Lat { get; set; }
 
         [JsonProperty("long")]
-        public string Long { get; set; }
+        public decimal Long { get; set; }
 
-        public override string Type
-        {
-            get { return "location"; }
-        }
+        
     }
 }

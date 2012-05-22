@@ -34,8 +34,10 @@ namespace TapMapWeb.Models
 		}
 
 		public virtual T Get(string id)
-		{
-			return _Client.GetJson<T>(id);
+		{			
+			var doc = _Client.GetJson<T>(id);
+			doc.Id = id; //server doesn't pass back the _id in the JSON
+			return doc;
 		}
 
 		public virtual void Remove(string id)
@@ -48,11 +50,11 @@ namespace TapMapWeb.Models
 			return _Client.GetView(InflectorNet.Pluralize(typeof(T).Name.ToLower()), viewName);            
 		}
 
-        protected IView<IViewRow> Project(string viewName)
-        {
-            return _Client.GetView(InflectorNet.Pluralize(typeof(T).Name.ToLower()), viewName);
-        }
-
+		protected IView<ISpatialViewRow> SpatialView(string viewName)
+		{
+			return _Client.GetSpatialView(InflectorNet.Pluralize(typeof(T).Name.ToLower()), viewName);
+		}
+        
         protected virtual string BuildKey(T model)
         {
             return string.Concat(model.Type, "_", model.Id.Replace(" ", "_"));

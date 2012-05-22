@@ -1,0 +1,125 @@
+﻿@model TapMapWeb.Models.Tap
+
+@{
+    ViewBag.Title = "Create a new Tap";
+}
+
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+
+@using (Html.BeginForm("LogOn", "Account", FormMethod.Post, new { @class = "form-vertical well" }))
+{
+    @Html.ValidationSummary(true)
+    <fieldset>
+        <legend>Tap</legend>
+
+        <div class="editor-label">
+            @Html.Label("Places")
+        </div>
+        <div class="editor-field">
+            <select name="Place" id="Place" disabled="disabled">
+                <option>-- Select a place --</option>
+            </select>
+            @Html.Hidden("PlaceTitle")
+        </div>        
+
+        <div class="editor-label">
+            @Html.Label("Brewery")
+        </div>
+        <div class="editor-field">
+            @Html.TextBox("Brewery")            
+        </div>
+
+        <div class="editor-label">
+            @Html.Label("Beer")
+        </div>
+        <div class="editor-field">
+            @Html.TextBox("Beer", "", new { disabled = "disabled" })
+            @Html.Hidden("BeerId")
+        </div>
+
+        <div class="editor-label">
+            @Html.Label("Comment")
+        </div>
+        <div class="editor-field">
+            @Html.TextArea("Comment")            
+        </div>
+        
+        <p>
+            <input type="Button" value="Tap!" id="Tap" class="btn-primary" />
+        </p>
+    </fieldset>
+}
+
+<script>
+    $().ready(function (e) {
+        try {
+
+            /*	Set authentication token and appid 
+            *	WARNING: this is a demo-only key
+            *	please register on http://api.developer.nokia.com/ 
+            *	and obtain your own developer's API key 
+            */
+            nokia.Settings.set("appId", "_peU-uCkp-j8ovkzFGNU");
+            nokia.Settings.set("authenticationToken", "gBoUkAMoxoqIWfxWA5DuMQ");
+
+            nokia.places.search.manager.findPlacesByCategory({
+                category: 'eat-drink',
+                useGeoLocation: true,
+                searchTerm: "Chris",
+                onComplete: function (data, status) {
+                    $.each(data.results.items, function (i) {
+                        var lat = data.results.items[i].position.latitude;
+                        var long = data.results.items[i].position.longitude;
+                        var title = data.results.items[i].title;
+                        var placeId = data.results.items[i].placeId;
+                        var option = new Option(title, lat + "|" + long + "|" + placeId);
+                        $("#Place").append(option);
+                    });
+                    $("#Place").removeAttr("disabled");
+                    $("#Place").change(function () {
+                        var text = $("#Place option:selected").text();
+                        $("#PlaceTitle").val(text);
+                    });
+                }
+            });
+
+            $("#Brewery").autocomplete({
+                source: '@Url.Content("~/AutoComplete/Breweries")',
+                minLength: 2,
+                select: function (e, u) {
+                    $("#Beer").removeAttr("disabled");
+                    $("#Beer").autocomplete({
+                        source: '@Url.Content("~/AutoComplete/Beers")' + '?brewery=' + u.item.id,
+                        minLength: 2,
+                        select: function (e, u) { $("#BeerId").val(u.item.id); }
+                    });
+                }
+            });
+
+
+
+            $("#Tap").bind("click", function (e) {
+                $.post('@Url.Content("~/Taps/Create")',
+                    {
+                        "placeTitle": $("#PlaceTitle").val(),
+                        "place": $("#Place").val(),
+                        "beerId": $("#BeerId").val(),
+                        "Comment": $("#Comment").val()
+                    },
+                    function (data) {
+                        $("#Place").val("");
+                        $("#Beer").val("");
+                        $("#Brewery").val("");
+                        $("#BeerId").val("");
+                        $("#Comment").val("");
+                        $("#PlaceTitle").val("");
+                        alert(data);
+                    });
+            });
+
+        } catch (e) {
+            alert(e.message);
+        }
+    });
+</script>

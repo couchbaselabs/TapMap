@@ -7,9 +7,9 @@ namespace TapMapWeb.Models
 {
     public class BeerRepository : RepositoryBase<Beer>
     {
-        public IEnumerable<Beer> GetBeers(string startsWith)
+        public IEnumerable<Beer> GetBeers(string brewery)
         {
-            foreach (var item in View("all_beers").StartKey(startsWith).EndKey(startsWith + "Z"))
+			foreach (var item in View("by_brewery").Key(brewery).Limit(10))
             {
                 yield return Get(item.ItemId);
             }

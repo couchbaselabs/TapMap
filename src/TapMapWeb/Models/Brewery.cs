@@ -9,13 +9,7 @@ namespace TapMapWeb.Models
     public class Brewery : ModelBase
     {
         [JsonProperty("name")]
-        public string Name { get; set; }
-
-        [JsonProperty("city")]
-        public string City { get; set; }
-
-        [JsonProperty("province")]
-        public string Province { get; set; }
+        public string Name { get; set; }        
 
         public override string Type
         {

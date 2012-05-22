@@ -95,7 +95,8 @@ namespace TapMapWeb.Controllers
                         setSessionUser(user);
                     };
                 }
-                
+
+				TempData["Message"] = string.Format("Welcome to TapMap {0}!", user.Username);
                 return RedirectToAction("Index");
             }
             catch(Exception ex)

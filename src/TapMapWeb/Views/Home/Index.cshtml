@@ -2,26 +2,46 @@
     ViewBag.Title = "TapMap";
 }
 
-<h2>Welcome to TapMap</h2>
+@TempData["Message"]
 
-<div id="taps" class="well" style="margin-top:20px;">
+<header class="hero-unit">
+  <h1>@ViewBag.Title</h1>
+  <h3>What's on Tap?</h3>
+  @using (Html.BeginForm("List", "Taps", FormMethod.Get, new { @class = "form-search", id = "GetTaps" })) {  
+    <select name="location" id="Location">
+        <option value="">-- Please Select --</option>
+        <option value="41.010855,-73.839111,42.71258,-69.862061|42.150101,-72.015381|9">Southern New England</option>
+        <option value="44.394019,-124.321289,48.914799,-117.070312|46.034601,-120.849609|7">Pacific Northwest</option>
+    </select>
+    @Html.Hidden("center")
+    @Html.Hidden("bbox")
+    @Html.Hidden("zoom")
+    <input type="Button" value="Find Taps" id="FindTaps" class="btn-primary" />
+  }
+</header>
 
-</div>
+<script>
 
-<script language="javascript">
-    window.setInterval(function () {
-        $.get('@Url.Content("~/Tap/List")', function (data) {
-            $("#taps").empty();
-            $.each(data, function (i, v) {
-                var date = v.time.replace("/Date(", "").replace(")/", "");
-                $("#taps").append(
-                    "<div>" + v.user + " tapped " + v.beer + " at " + v.place + "</div>" +
-                    "<div style='margin-bottom:10px;border-bottom:1px solid #c0c0c0;'><em>"
-                        + v.comment + " at " + new Date(parseInt(date)) +
-                    "</em></div>"
-                );
-            });
+    $().ready(function (e) {
+
+
+        $("#FindTaps").bind("click", function (e) {
+            if ($("#Location").val() != "") {
+                var data = $("#Location").val().split("|");
+                $("#bbox").val(data[0]);
+                $("#center").val(data[1]);
+                $("#zoom").val(data[2]);
+                $("#Location").attr("disabled", "disabled");
+                $("#GetTaps").submit();
+                $("#Location").removeAttr("disabled");
+
+            }
         });
-    }, 1000);
+
+        $("#Location").bind("change", function (e) {
+            var selected = $("#Location option:selected");
+        });
+
+    });
 
 </script>
