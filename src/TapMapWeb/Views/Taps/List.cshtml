@@ -39,14 +39,13 @@
             {   
                 <text>
                 var props = { "brush": { "color": "#cc0000"} }
-                console.log(map.center);
-                var coordinate = [@item.Place.Lat, @item.Place.Long];
-                var standardMarker = new nokia.maps.map.StandardMarker(coordinate, props);  
+                console.log(map.center);                
+                var standardMarker = new nokia.maps.map.StandardMarker([@item.Place.Lat, @item.Place.Long], props);  
                 standardMarker.addListener("click",
 	                function (evt) {
-	                    // Set the tail of the bubble to the coordinate of the marker
+                        // Set the tail of the bubble to the coordinate of the marker
                         var bubbleText = '@item.Place.Title<br />' + '@item.Beer.Name<br />' + '@item.Username: ' + '@item.Comment';
-	                    infoBubbles.addBubble(bubbleText, coordinate);
+	                    infoBubbles.addBubble(bubbleText,  [@item.Place.Lat, @item.Place.Long]);
 	                }
                 );
                 map.objects.add(standardMarker);
