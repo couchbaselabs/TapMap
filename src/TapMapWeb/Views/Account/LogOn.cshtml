@@ -12,8 +12,13 @@ New user?  @Html.ActionLink("Register", "Create", "Account") here.
 </div>
 
 
+
+
 @using (Html.BeginForm("LogOn", "Account", FormMethod.Post, new { @class = "form-vertical well" }))
 {
+    <div style="color:Red">
+    @ViewBag.Message
+    </div>
     @Html.ValidationSummary(true)
     <fieldset>
         <legend>Login</legend>

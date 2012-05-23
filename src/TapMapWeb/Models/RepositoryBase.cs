@@ -36,7 +36,7 @@ namespace TapMapWeb.Models
 		public virtual T Get(string id)
 		{			
 			var doc = _Client.GetJson<T>(id);
-			doc.Id = id; //server doesn't pass back the _id in the JSON
+			if (doc != null) doc.Id = id; //server doesn't pass back the _id in the JSON
 			return doc;
 		}
 

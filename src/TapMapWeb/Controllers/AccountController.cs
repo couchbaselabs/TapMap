@@ -38,12 +38,18 @@ namespace TapMapWeb.Controllers
         {
 
             User user = null;
-            if ((user = Repository.Get(username, password)) != null)
-            {
-                setSessionUser(user);
-            }
+			if ((user = Repository.Get(username, password)) != null)
+			{
+				setSessionUser(user);
+				return RedirectToAction("Index", "Home");
+			}
+			else
+			{
+				ViewBag.Message = "Incorrect username or password";
+				return View();
+			}
 
-            return RedirectToAction("Index", "Home");
+            
         }
 
         public ActionResult LogOut()
