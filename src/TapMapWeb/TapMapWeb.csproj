@@ -157,7 +157,6 @@
     <Content Include="Content\themes\blitzer\jquery.ui.theme.css" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="HTMLPage1.htm" />
     <Content Include="LICENSE.txt" />
     <Content Include="Scripts\jquery-1.5.1-vsdoc.js" />
     <Content Include="Scripts\jquery-1.5.1.js" />

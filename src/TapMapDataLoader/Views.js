@@ -32,6 +32,13 @@ function (doc) {
     }
 }
 
+//-> by_brewery_and_name
+function (doc) {
+    if (doc.type == "beer" && doc.brewery) {
+        emit([doc.brewery, doc.name], null);
+    }
+}
+
 //-> by_brewery
 function (doc) {
     if (doc.type == "beer" && doc.brewery) {

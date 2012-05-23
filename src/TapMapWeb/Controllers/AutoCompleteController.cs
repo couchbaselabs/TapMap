@@ -26,7 +26,7 @@ namespace TapMapWeb.Controllers
 
         public ActionResult Beers(string brewery, string term)
         {
-            return Json(BeerRepository.GetBeers(brewery)
+            return Json(BeerRepository.GetBeers(brewery, term)
 					.Where(b => b.Name.StartsWith(term, StringComparison.CurrentCultureIgnoreCase))
 					.Select(b => new { label = b.Name, id = b.Id}),JsonRequestBehavior.AllowGet);
         }		
