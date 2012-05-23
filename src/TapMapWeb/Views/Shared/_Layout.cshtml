@@ -43,7 +43,10 @@
                 <div class="nav-collapse">
                     <ul class="nav">
                         <li class="@setActive("Home", "Index")">@Html.ActionLink("Home", "Index", "Home")</li>
-                        <li class="@setActive("Taps", "Create")">@Html.ActionLink("New Tap", "Create", "Taps")</li>
+                        @if (isLoggedIn())
+                        { 
+                            <li class="@setActive("Taps", "Create")">@Html.ActionLink("New Tap", "Create", "Taps")</li>
+                        }
                     </ul>
                 </div>
                 <!--/.nav-collapse -->
