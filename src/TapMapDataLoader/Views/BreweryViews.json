@@ -1,0 +1,8 @@
+﻿{
+	"_id": "_design/breweries",
+	"views": {
+		"by_name": {
+			"map": "function (doc) { if (doc.type == \"brewery\") { emit(doc.name, null); } }"
+		}
+	}
+}

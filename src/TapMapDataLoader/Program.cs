@@ -11,6 +11,7 @@ using Enyim.Caching.Memcached;
 using Couchbase.Configuration;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
+using System.Net;
 
 namespace TapMapDataLoader
 {
@@ -20,16 +21,16 @@ namespace TapMapDataLoader
 		{
 			try
 			{
-				var config = new CouchbaseClientConfiguration();
-				config.Urls.Add(new Uri("http://localhost:8091/pools/default"));
-				config.Bucket = "beernique";
-				config.BucketPassword = "b33rs";
-
-				var client = new CouchbaseClient(config);
+				var client = new CouchbaseClient();
 
 				var root = Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\beer-sample");
 				import(client, "brewery", Path.Combine(root, "breweries"));
 				import(client, "beer", Path.Combine(root, "beer"));
+				
+				createViewFromFile(@"Views\UserViews.json", "users");
+				createViewFromFile(@"Views\BreweryViews.json", "breweries");
+				createViewFromFile(@"Views\BeerViews.json", "beers");
+				createViewFromFile(@"Views\TapViews.json", "taps");
 
 			}
 			catch (Exception ex)
@@ -60,7 +61,27 @@ namespace TapMapDataLoader
 				var storeResult = client.Store(StoreMode.Set, key, jObj.ToString());
 				Console.WriteLine(storeResult);
 			}
+		}
 
+		private static void createViewFromFile(string viewFile, string docName)
+		{
+			Console.WriteLine("Status for DELETE {0}: {1}", docName, request(viewFile, docName, "DELETE"));
+			Console.WriteLine("Status for GET {0}: {1}", docName, request(viewFile, docName, "PUT"));
+		}
+
+		private static string request(string viewFile, string docName, string verb)
+		{
+			var viewContent = File.ReadAllText(viewFile);
+			byte[] arr = System.Text.Encoding.UTF8.GetBytes(viewContent);
+			var request = (HttpWebRequest)HttpWebRequest.Create("http://localhost:8091/couchBase/beernique/_design/" + docName);
+			request.Method = verb;
+			request.ContentType = "application/json";
+			request.ContentLength = arr.Length;
+			var dataStream = request.GetRequestStream();
+			dataStream.Write(arr, 0, arr.Length);
+			dataStream.Close();
+			var response = (HttpWebResponse)request.GetResponse();
+			return response.StatusCode.ToString();
 		}
 	}
 }

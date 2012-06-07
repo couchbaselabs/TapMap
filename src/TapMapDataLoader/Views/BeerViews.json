@@ -1,0 +1,11 @@
+﻿{
+    "_id": "_design/beers",
+    "views": {
+        "by_name": {
+            "map": "function (doc) { if (doc.type == \"beer\") { emit(doc.name, null); } }"
+        },
+        "by_brewery_and_name": {
+            "map": "function (doc) { if (doc.type == \"beer\" && doc.brewery) { emit([doc.brewery, doc.name], null); } }"
+        }
+    }
+}
