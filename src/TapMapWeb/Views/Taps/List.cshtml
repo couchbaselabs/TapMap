@@ -38,8 +38,7 @@
             @foreach(var item in ViewData.Model)
             {   
                 <text>
-                var props = { "brush": { "color": "#cc0000"} }
-                console.log(map.center);                
+                var props = { "brush": { "color": "#cc0000"} }                
                 var standardMarker = new nokia.maps.map.StandardMarker([@item.Place.Lat, @item.Place.Long], props);  
                 standardMarker.addListener("click",
 	                function (evt) {
