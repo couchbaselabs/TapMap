@@ -1,0 +1,16 @@
+{
+  "username": "paul",
+  "place": {
+    "title": "S&S Deli",
+    "placeId": "840drt3n-07af0ade22314981884a2f71653caab7",
+    "lat": 42.373264,
+    "long": -71.098789
+  },
+  "beer": {
+    "name": "Cambridge Amber",
+    "abv": 4.3,
+    "type": "beer"
+  },
+  "timestamp": "2012-06-08T18:34:49.9563089-04:00",
+  "comment": "My favorite beer when I'm in Beantown."
+}

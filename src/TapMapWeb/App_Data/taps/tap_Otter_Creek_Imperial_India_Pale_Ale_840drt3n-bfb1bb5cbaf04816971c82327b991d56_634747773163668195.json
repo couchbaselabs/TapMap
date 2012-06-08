@@ -1,0 +1,16 @@
+{
+  "username": "paul",
+  "place": {
+    "title": "Punjabi Dhaba",
+    "placeId": "840drt3n-bfb1bb5cbaf04816971c82327b991d56",
+    "lat": 42.373878,
+    "long": -71.100791
+  },
+  "beer": {
+    "name": "Otter Creek Imperial India Pale Ale",
+    "abv": 11,
+    "type": "beer"
+  },
+  "timestamp": "2012-06-08T18:35:16.3668195-04:00",
+  "comment": "Bloody great."
+}

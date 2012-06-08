@@ -1,0 +1,16 @@
+{
+  "username": "ringo",
+  "place": {
+    "title": "Charlie's Kitchen",
+    "placeId": "840drt3j-70883163f40741adaf0e29403401e3d5",
+    "lat": 42.372341,
+    "long": -71.121589
+  },
+  "beer": {
+    "name": "Allagash White",
+    "abv": 5,
+    "type": "beer"
+  },
+  "timestamp": "2012-06-08T18:42:02.8590696-04:00",
+  "comment": "This is one of the best beers in its class."
+}

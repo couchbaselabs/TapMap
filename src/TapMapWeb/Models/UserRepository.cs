@@ -46,7 +46,7 @@ namespace TapMapWeb.Models
 
         public User Get(string username, string password)
         {
-            return Get(buildKey(username, HashHelper.ToHashedString(password)));
+            return Get(buildKey(username, HashHelper.ToHashedString(new string(username.Reverse().ToArray()) + "_" + password)));
         }
 
 		protected override string BuildKey(User user)

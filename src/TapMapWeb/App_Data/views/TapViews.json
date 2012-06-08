@@ -1,0 +1,11 @@
+﻿{
+  "_id": "_design/dev_taps",
+  "views": {
+    "all_taps": {
+      "map": "function (doc) {\n  if (doc.type == \"tap\") {\n    emit(doc._id, null);\n  }\n}"
+    }
+  },
+  "spatial": {
+    "by_location": "function(doc) {\n    if (doc.type == \"tap\" && doc.place) {\n        emit(\n            {\n                type: \"Point\",\n                coordinates: [doc.place.lat, doc.place.long]\n            },\n            [doc._id, doc.place]);\n    }\n};"
+  }
+}

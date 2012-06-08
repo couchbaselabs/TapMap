@@ -10,6 +10,7 @@
   @using (Html.BeginForm("List", "Taps", FormMethod.Get, new { @class = "form-search", id = "GetTaps" })) {  
     <select name="location" id="Location">
         <option value="">-- Please Select --</option>
+        <option value="42.319835,-71.16703,42.452206,-70.95623|42.377179,-71.105919|15">Greater Boston</option>
         <option value="41.010855,-73.839111,42.71258,-69.862061|42.150101,-72.015381|9">Southern New England</option>
         <option value="44.394019,-124.321289,48.914799,-117.070312|46.034601,-120.849609|7">Pacific Northwest</option>
     </select>

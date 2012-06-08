@@ -1,0 +1,11 @@
+﻿{
+	"_id": "_design/users",
+	"views": {
+		"by_email": {
+			"map": "function (doc) { if (doc.type == \"user\") { emit(doc.email, null); } }"
+		},
+		"by_username": {
+			"map": "function (doc) { if (doc.type == \"user\") { emit(doc.username, null); } }"
+		}
+	}
+}

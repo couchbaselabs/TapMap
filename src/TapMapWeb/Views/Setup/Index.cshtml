@@ -1,0 +1,28 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<div style="color:@ViewBag.MessageColor">
+@ViewBag.Message
+</div>
+
+@using (Html.BeginForm())
+{ 
+    <fieldset>
+        <legend>Setup TapMap Data</legend>
+
+        <div style="color:red;font-weight:bold;font-size:16px;margin-bottom:10px;">
+            By submitting this form all views and beer and brewery data will be reset.
+        </div>
+        <div class="editor-label">
+            <label for="SetupKey">SetupKey - See TapMapSetupKey in Web.config</label>
+        </div>
+        <div class="editor-field">
+            @Html.TextBox("SetupKey")
+        </div>
+        <p>
+            @Html.Hidden("ShouldReset", true)
+            <input type="submit" value="Submit" />
+        </p>
+    </fieldset>
+}

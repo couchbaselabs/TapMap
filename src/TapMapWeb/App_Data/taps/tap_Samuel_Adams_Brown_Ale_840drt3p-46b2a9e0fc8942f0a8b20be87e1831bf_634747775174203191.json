@@ -1,0 +1,16 @@
+{
+  "username": "john",
+  "place": {
+    "title": "Pizzeria Regina",
+    "placeId": "840drt3p-46b2a9e0fc8942f0a8b20be87e1831bf",
+    "lat": 42.365451,
+    "long": -71.056953
+  },
+  "beer": {
+    "name": "Samuel Adams Brown Ale",
+    "abv": 5.35,
+    "type": "beer"
+  },
+  "timestamp": "2012-06-08T18:38:37.4203191-04:00",
+  "comment": "A great brown ale."
+}

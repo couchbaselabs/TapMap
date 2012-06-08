@@ -1,0 +1,16 @@
+{
+  "username": "john",
+  "place": {
+    "title": "Border Cafe",
+    "placeId": "840drt3j-9291037eb26044e7b509aac6f1840137",
+    "lat": 42.37421,
+    "long": -71.120338
+  },
+  "beer": {
+    "name": "Ale",
+    "abv": 0,
+    "type": "beer"
+  },
+  "timestamp": "2012-06-08T18:39:48.4413813-04:00",
+  "comment": "These guys make a fantastic ale!"
+}

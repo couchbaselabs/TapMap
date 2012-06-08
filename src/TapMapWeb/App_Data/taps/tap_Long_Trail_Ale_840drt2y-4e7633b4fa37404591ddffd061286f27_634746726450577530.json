@@ -1,0 +1,16 @@
+{
+  "username": "",
+  "place": {
+    "title": "Mooo Restaurant",
+    "placeId": "840drt2y-4e7633b4fa37404591ddffd061286f27",
+    "lat": 42.358407,
+    "long": -71.061971
+  },
+  "beer": {
+    "name": "Long Trail Ale",
+    "abv": 4.6,
+    "type": "beer"
+  },
+  "timestamp": "2012-06-07T13:30:45.0567529-04:00",
+  "comment": "Tapped!"
+}

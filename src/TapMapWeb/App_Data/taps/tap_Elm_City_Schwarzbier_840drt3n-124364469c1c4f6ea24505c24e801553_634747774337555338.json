@@ -1,0 +1,16 @@
+{
+  "username": "george",
+  "place": {
+    "title": "Ryles Jazz Club",
+    "placeId": "840drt3n-124364469c1c4f6ea24505c24e801553",
+    "lat": 42.373232,
+    "long": -71.100264
+  },
+  "beer": {
+    "name": "Elm City Schwarzbier",
+    "abv": 5.3,
+    "type": "beer"
+  },
+  "timestamp": "2012-06-08T18:37:13.7555338-04:00",
+  "comment": "I miss the New Haven Elm City."
+}

@@ -1,0 +1,16 @@
+{
+  "username": "george",
+  "place": {
+    "title": "1369 Coffee House",
+    "placeId": "840drt3n-3d60ecf17ae14bcf83eaacae5b2f42a9",
+    "lat": 42.37369,
+    "long": -71.10039
+  },
+  "beer": {
+    "name": "Harpoon IPA",
+    "abv": 5.9,
+    "type": "beer"
+  },
+  "timestamp": "2012-06-08T18:36:32.4871734-04:00",
+  "comment": "A great standby IPA."
+}
