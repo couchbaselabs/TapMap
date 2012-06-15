@@ -41,6 +41,9 @@
     <Reference Include="Enyim.Caching">
       <HintPath>..\..\lib\Couchbase\Enyim.Caching.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="Inflector.Net">
       <HintPath>..\..\lib\Inflector\Inflector.Net.dll</HintPath>
     </Reference>
@@ -70,6 +73,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views.js" />
+    <None Include="packages.config" />
     <None Include="Views\BeerViews.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

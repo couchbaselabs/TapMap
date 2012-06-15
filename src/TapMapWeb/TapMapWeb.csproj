@@ -46,6 +46,9 @@
     <Reference Include="Hammock">
       <HintPath>..\..\lib\Couchbase\Hammock.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="Inflector.Net">
       <HintPath>..\..\lib\Inflector\Inflector.Net.dll</HintPath>
     </Reference>

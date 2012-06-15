@@ -11,17 +11,22 @@ using Newtonsoft.Json.Linq;
 using Enyim.Caching.Memcached;
 using System.Net;
 using System.Configuration;
+using Couchbase.Configuration;
+using TapMapWeb.Filters;
+using ICSharpCode.SharpZipLib.Zip;
+using ICSharpCode.SharpZipLib.Core;
 
 namespace TapMapWeb.Controllers
 {
+	[SessionFilter]
     public class SetupController : Controller
     {
         //
         // GET: /Setup/
         [HttpGet]
         public ActionResult Index()
-        {
-            return View();
+		{            
+			return View();
         }
 
         [HttpPost]
@@ -34,13 +39,13 @@ namespace TapMapWeb.Controllers
 					throw new ApplicationException("Invalid TapMapSetupKey.  Please review the appSetting \"TapMapSetupKey\" in Web.config");
 				}
 
-				var client = new CouchbaseClient();
+				var client = new CouchbaseClient();				
 
 				var root = Path.Combine(Environment.CurrentDirectory, Server.MapPath("~/App_Data"));
-				import(client, "brewery", Path.Combine(root, "breweries"));
-				import(client, "beer", Path.Combine(root, "beers"));
-				import(client, "user", Path.Combine(root, "users"));
-				import(client, "tap", Path.Combine(root, "taps"));
+				import(client, "brewery", root, "breweries.zip");
+				import(client, "beer", root, "beers.zip");
+				import(client, "user", root, "users.zip");
+				import(client, "tap", root, "taps.zip");
 				
 				createViewFromFile(Path.Combine(root, @"views\UserViews.json"), "users");
 				createViewFromFile(Path.Combine(root, @"views\BreweryViews.json"), "breweries");
@@ -59,29 +64,64 @@ namespace TapMapWeb.Controllers
 			return View();
         }
 
-		private void import(CouchbaseClient client, string type, string directory)
+		private void import(CouchbaseClient client, string type, string rootDir, string zipFile)
 		{
-			var dir = new DirectoryInfo(directory);
-			foreach (var file in dir.GetFiles())
-			{
-				if (file.Extension != ".json") continue;
-				Console.WriteLine("Adding {0}", file);
+			unzipDataFiles(rootDir, zipFile);
 
+			var dataFilesPath = Path.Combine(rootDir, zipFile.Replace(".zip", ""));
+			var dir = new DirectoryInfo(dataFilesPath);
+			foreach (var file in dir.GetFiles("*.json"))
+			{								
 				var json = System.IO.File.ReadAllText(file.FullName);
 				var key = file.Name.Replace(file.Extension, "");
-				json = Regex.Replace(json.Replace(key, "LAZY"), "\"_id\":\"LAZY\",", "");
+				
 				var jObj = JsonConvert.DeserializeObject(json) as JObject;
+				jObj.Remove("_id");
 				jObj.Add("type", type);
 
 				if (type == "beer")
 				{
-					jObj["brewery"] = "brewery_" + jObj["brewery"].ToString().Replace(" ", "_");
+				    jObj["brewery"] = "brewery_" + jObj["brewery"].ToString().Replace(" ", "_");
 				}
 
-				var storeResult = client.Store(StoreMode.Set, key, jObj.ToString());
-				Console.WriteLine(storeResult);
+				var storeResult = client.Store(StoreMode.Set, key, jObj.ToString());				
 			}
 		}
+
+		private void unzipDataFiles(string rootDir, string zipFile)
+		{
+			var zipFilePath = Path.Combine(rootDir, zipFile);
+			var unzippedDirName = zipFile.Replace(".zip", "");
+			var fs = System.IO.File.OpenRead(zipFilePath);
+			var zf = new ZipFile(fs);
+
+			foreach (ZipEntry entry in zf)
+			{
+				if (entry.IsDirectory)
+				{
+					var directoryName = Path.Combine(rootDir, entry.Name);
+					if (!Directory.Exists(directoryName)) Directory.CreateDirectory(directoryName);
+					continue;
+				}
+
+				var entryFileName = entry.Name;
+
+				var buffer = new byte[4096];
+				var zipStream = zf.GetInputStream(entry);
+
+				var unzippedFilePath = Path.Combine(rootDir, entryFileName);
+
+				using (var fsw = System.IO.File.Create(unzippedFilePath))
+				{
+					StreamUtils.Copy(zipStream, fsw, buffer);
+				}
+
+			}
+
+			zf.IsStreamOwner = true;
+			zf.Close();
+
+		}			
 
 		private static void createViewFromFile(string viewFile, string docName)
 		{
@@ -93,7 +133,8 @@ namespace TapMapWeb.Controllers
 		{
 			var viewContent = System.IO.File.ReadAllText(viewFile);
 			byte[] arr = System.Text.Encoding.UTF8.GetBytes(viewContent);
-			var request = (HttpWebRequest)HttpWebRequest.Create("http://localhost:8091/couchBase/beernique/_design/" + docName);
+			var requestUri = getBaseUri().AbsoluteUri + "couchBase/beernique/_design/" + docName;
+			var request = (HttpWebRequest)HttpWebRequest.Create(requestUri);
 			request.Method = verb;
 			request.ContentType = "application/json";
 			request.ContentLength = arr.Length;
@@ -102,6 +143,13 @@ namespace TapMapWeb.Controllers
 			dataStream.Close();
 			var response = (HttpWebResponse)request.GetResponse();
 			return response.StatusCode.ToString();
+		}
+
+		private static Uri getBaseUri()
+		{
+			var config = (CouchbaseClientSection)ConfigurationManager.GetSection("couchbase");
+			var firstUri = config.Servers.Urls.ToUriCollection().First();
+			return new UriBuilder(firstUri.Scheme, firstUri.Host, firstUri.Port).Uri;
 		}
 
 	}

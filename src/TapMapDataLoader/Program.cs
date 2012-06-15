@@ -12,6 +12,8 @@ using Couchbase.Configuration;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using System.Net;
+using ICSharpCode.SharpZipLib.Zip;
+using ICSharpCode.SharpZipLib.Core;
 
 namespace TapMapDataLoader
 {
@@ -24,8 +26,10 @@ namespace TapMapDataLoader
 				var client = new CouchbaseClient();
 
 				var root = Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\beer-sample");
-				import(client, "brewery", Path.Combine(root, "breweries"));
-				import(client, "beer", Path.Combine(root, "beer"));
+				import(client, "brewery", root, "breweries.zip");
+				import(client, "beer", root, "beers.zip");
+				import(client, "user", root, "users.zip");
+				import(client, "tap", root, "taps.zip");
 				
 				createViewFromFile(@"Views\UserViews.json", "users");
 				createViewFromFile(@"Views\BreweryViews.json", "breweries");
@@ -39,18 +43,19 @@ namespace TapMapDataLoader
 			}
 		}
 
-		private static void import(CouchbaseClient client, string type, string directory)
+		private static void import(CouchbaseClient client, string type, string rootDir, string zipFile)
 		{
-			var dir = new DirectoryInfo(directory);
-			foreach (var file in dir.GetFiles())
-			{
-				if (file.Extension != ".json") continue;
-				Console.WriteLine("Adding {0}", file);
+			unzipDataFiles(rootDir, zipFile);
 
-				var json = File.ReadAllText(file.FullName);
+			var dataFilesPath = Path.Combine(rootDir, zipFile.Replace(".zip", ""));
+			var dir = new DirectoryInfo(dataFilesPath);
+			foreach (var file in dir.GetFiles("*.json"))
+			{
+				var json = System.IO.File.ReadAllText(file.FullName);
 				var key = file.Name.Replace(file.Extension, "");
-				json = Regex.Replace(json.Replace(key, "LAZY"), "\"_id\":\"LAZY\",", "");
+
 				var jObj = JsonConvert.DeserializeObject(json) as JObject;
+				jObj.Remove("_id");
 				jObj.Add("type", type);
 
 				if (type == "beer")
@@ -59,8 +64,44 @@ namespace TapMapDataLoader
 				}
 
 				var storeResult = client.Store(StoreMode.Set, key, jObj.ToString());
-				Console.WriteLine(storeResult);
+				Console.WriteLine("Store result for {0}: {1}", file.Name, storeResult);
 			}
+		}
+
+		private static void unzipDataFiles(string rootDir, string zipFile)
+		{
+			var zipFilePath = Path.Combine(rootDir, zipFile);
+			var unzippedDirName = zipFile.Replace(".zip", "");
+			var fs = System.IO.File.OpenRead(zipFilePath);
+			var zf = new ZipFile(fs);
+
+			foreach (ZipEntry entry in zf)
+			{
+				if (entry.IsDirectory)
+				{
+					var directoryName = Path.Combine(rootDir, entry.Name);
+					if (!Directory.Exists(directoryName)) Directory.CreateDirectory(directoryName);
+					continue;
+				}
+
+				var entryFileName = entry.Name;
+				Console.WriteLine("Unzipping {0}", entryFileName);
+
+				var buffer = new byte[4096];
+				var zipStream = zf.GetInputStream(entry);
+
+				var unzippedFilePath = Path.Combine(rootDir, entryFileName);
+
+				using (var fsw = System.IO.File.Create(unzippedFilePath))
+				{
+					StreamUtils.Copy(zipStream, fsw, buffer);
+				}
+
+			}
+
+			zf.IsStreamOwner = true;
+			zf.Close();
+
 		}
 
 		private static void createViewFromFile(string viewFile, string docName)
