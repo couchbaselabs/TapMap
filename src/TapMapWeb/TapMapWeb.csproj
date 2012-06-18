@@ -226,8 +226,17 @@
   <ItemGroup>
     <Content Include="Views\Taps\Create.cshtml" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="App_Data\" />
+    <Content Include="App_Data\beers.zip" />
+    <Content Include="App_Data\breweries.zip" />
+    <None Include="App_Data\LICENSE" />
+    <Content Include="App_Data\taps.zip" />
+    <Content Include="App_Data\users.zip" />
+    <None Include="App_Data\views\BeerViews.json" />
+    <None Include="App_Data\views\BreweryViews.json" />
+    <None Include="App_Data\views\TapViews.json" />
+    <None Include="App_Data\views\UserViews.json" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
